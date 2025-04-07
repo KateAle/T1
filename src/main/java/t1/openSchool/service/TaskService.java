@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import t1.openSchool.Dto.TaskDto;
+import t1.openSchool.dto.TaskDto;
 import t1.openSchool.aspect.annotation.HandlingResult;
 import t1.openSchool.aspect.annotation.LogException;
 import t1.openSchool.aspect.annotation.LogExecution;

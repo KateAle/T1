@@ -1,7 +1,7 @@
 package t1.openSchool.mapper;
 
 import org.mapstruct.ReportingPolicy;
-import t1.openSchool.Dto.TaskDto;
+import t1.openSchool.dto.TaskDto;
 import t1.openSchool.model.Task;
 import org.mapstruct.Mapper;
 

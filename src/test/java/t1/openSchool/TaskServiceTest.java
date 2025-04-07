@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import t1.openSchool.Dto.TaskDto;
+import t1.openSchool.dto.TaskDto;
 import t1.openSchool.model.Task;
 import t1.openSchool.repository.TaskRepository;
 import t1.openSchool.mapper.TaskMapper;

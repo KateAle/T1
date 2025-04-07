@@ -2,7 +2,7 @@ package t1.openSchool.mapper;
 
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
-import t1.openSchool.Dto.TaskDto;
+import t1.openSchool.dto.TaskDto;
 import t1.openSchool.model.Task;
 
 @Generated(

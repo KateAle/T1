@@ -1,4 +1,4 @@
-package t1.openSchool.Dto;
+package t1.openSchool.dto;
 
 import lombok.Data;
 
