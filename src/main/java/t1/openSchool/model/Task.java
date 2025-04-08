@@ -21,6 +21,9 @@ public class Task {
     private String description;
     private Long userId;
 
+    @Column(nullable = false)
+    private String status = "CREATED";
+
     public Task(String title, String description, Long userId) {
         this.title = title;
         this.description = description;
@@ -57,5 +60,13 @@ public class Task {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

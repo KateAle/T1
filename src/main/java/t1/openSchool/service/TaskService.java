@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import t1.openSchool.dto.TaskDto;
 import t1.openSchool.aspect.annotation.HandlingResult;
 import t1.openSchool.aspect.annotation.LogException;
 import t1.openSchool.aspect.annotation.LogExecution;
 import t1.openSchool.aspect.annotation.LogExecutionTime;
 import t1.openSchool.aspect.annotation.LogTracking;
+import t1.openSchool.dto.TaskDto;
+import t1.openSchool.kafka.producer.TaskEventProducer;
 import t1.openSchool.mapper.TaskMapper;
 import t1.openSchool.model.Task;
 import t1.openSchool.repository.TaskRepository;
@@ -23,6 +24,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
+    private final TaskEventProducer taskEventProducer;
 
     @LogExecution
     @LogExecutionTime
@@ -53,9 +55,21 @@ public class TaskService {
         log.debug("Updating task id {}: {}", id, taskDto);
         return taskRepository.findById(id)
                 .map(existingTask -> {
+                    String oldStatus = existingTask.getStatus();
                     Task updatedTask = taskMapper.taskDtoToTask(taskDto);
                     updatedTask.setId(existingTask.getId());
-                    return taskMapper.taskToTaskDto(taskRepository.save(updatedTask));
+                    Task savedTask = taskRepository.save(updatedTask);
+
+                    if (!updatedTask.getStatus().equals(oldStatus)) {
+                        log.info("Task status changed from {} to {}", oldStatus, updatedTask.getStatus());
+                        taskEventProducer.sendTaskStatusChangeEvent(
+                                savedTask.getId(),
+                                savedTask.getStatus(),
+                                "user@example.com"
+                        );
+                    }
+
+                    return taskMapper.taskToTaskDto(savedTask);
                 })
                 .orElse(null);
     }
