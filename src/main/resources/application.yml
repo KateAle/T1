@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -9,29 +9,26 @@ spring:
       connection-timeout: 5000
 
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: localhost:9092
     consumer:
-      group-id: task-notification-group
+      group-id: ${KAFKA_CONSUMER_GROUP:task-notification-group}
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "t1.openSchool.kafka.dto"
+        spring.json.trusted.packages: "t1.openSchool.dto"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
   mail:
-    host: smtp.yandex.ru
-    port: 587
-    username: katusha.ale1@yandex.ru
-    password: 13091992dasha
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
-          auth: true
-          starttls.enable: true
-          ssl.trust: smtp.yandex.ru
+          auth: ${MAIL_SMTP_AUTH:false}
+          starttls.enable: ${MAIL_SMTP_STARTTLS:false}
     test-connection: true
 
   jpa:
@@ -45,7 +42,7 @@ spring:
 
 task:
   notification:
-    email: katusha.ale1@yandex.ru
+    email: ${NOTIFICATION_EMAIL:}
 
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}

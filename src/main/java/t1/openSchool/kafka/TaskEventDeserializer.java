@@ -15,10 +15,8 @@ public class TaskEventDeserializer extends JsonDeserializer<TaskStatusChangeEven
         try {
             return super.deserialize(topic, data);
         } catch (Exception e) {
-            log.error("Failed to deserialize message: {}",
-                    data != null ? new String(data, StandardCharsets.UTF_8) : "null",
-                    e);
-            return null;
+            log.error("Failed to deserialize message from topic {}", topic, e);
+            throw new RuntimeException("Failed to deserialize message", e);
         }
     }
 
@@ -27,10 +25,8 @@ public class TaskEventDeserializer extends JsonDeserializer<TaskStatusChangeEven
         try {
             return super.deserialize(topic, headers, data);
         } catch (Exception e) {
-            log.error("Failed to deserialize message with headers: {}",
-                    data != null ? new String(data, StandardCharsets.UTF_8) : "null",
-                    e);
-            return null;
+            log.error("Failed to deserialize message with headers from topic {}", topic, e);
+            throw new RuntimeException("Failed to deserialize message with headers", e);
         }
     }
 }
