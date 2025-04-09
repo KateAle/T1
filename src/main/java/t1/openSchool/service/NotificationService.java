@@ -1,51 +1,44 @@
 package t1.openSchool.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.MailException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import t1.openSchool.aspect.annotation.LogException;
-import t1.openSchool.aspect.annotation.LogExecution;
-import t1.openSchool.aspect.annotation.LogExecutionTime;
-import t1.openSchool.dto.TaskStatusChangeEvent;
+import t1.openSchool.model.TaskStatus;
 
-@Slf4j
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
+    private static final String SUBJECT = "Task Status Update";
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private final JavaMailSender mailSender;
 
-    @LogExecution
-    @LogExecutionTime
-    @LogException
-    public void sendTaskStatusChangeNotification(TaskStatusChangeEvent event) {
-        String subject = "Изменение статуса задачи";
-        String message = String.format(
-                "Статус задачи #%d изменен на: %s",
-                event.getTaskId(),
-                event.getNewStatus()
-        );
+    @Value("${task.notification.email}")
+    private String notificationEmail;
 
-        sendEmail(event.getEmail(), subject, message);
+    public void sendStatusChangeNotification(Long taskId, TaskStatus newStatus) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(notificationEmail);
+        message.setSubject(SUBJECT);
+        message.setText(buildMessageContent(taskId, newStatus));
+
+        mailSender.send(message);
     }
 
-    private void sendEmail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("notifications@openschool.local");
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-
-        try {
-            mailSender.send(message);
-            log.info("Email успешно отправлен на адрес: {}. Тема: {}", to, subject);
-            log.debug("Содержание письма: {}", text);
-        } catch (MailException e) {
-            log.error("Ошибка отправки email на адрес {}: {}", to, e.getMessage());
-            throw new RuntimeException("Не удалось отправить email", e);
-        }
+    private String buildMessageContent(Long taskId, TaskStatus newStatus) {
+        return String.format(
+                "Task #%d status has been changed to: %s\n" +
+                        "Change time: %s\n\n" +
+                        "This is an automated notification. Please do not reply.",
+                taskId,
+                newStatus,
+                LocalDateTime.now().format(DATE_FORMATTER)
+        );
     }
 }

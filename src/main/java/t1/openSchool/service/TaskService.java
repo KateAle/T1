@@ -13,6 +13,7 @@ import t1.openSchool.dto.TaskDto;
 import t1.openSchool.kafka.producer.TaskEventProducer;
 import t1.openSchool.mapper.TaskMapper;
 import t1.openSchool.model.Task;
+import t1.openSchool.model.TaskStatus;
 import t1.openSchool.repository.TaskRepository;
 
 import java.util.List;
@@ -52,20 +53,17 @@ public class TaskService {
     @LogExecutionTime
     @Transactional
     public TaskDto updateTask(Long id, TaskDto taskDto) {
-        log.debug("Updating task id {}: {}", id, taskDto);
         return taskRepository.findById(id)
                 .map(existingTask -> {
-                    String oldStatus = existingTask.getStatus();
+                    TaskStatus oldStatus = existingTask.getStatus();
                     Task updatedTask = taskMapper.taskDtoToTask(taskDto);
                     updatedTask.setId(existingTask.getId());
                     Task savedTask = taskRepository.save(updatedTask);
 
                     if (!updatedTask.getStatus().equals(oldStatus)) {
-                        log.info("Task status changed from {} to {}", oldStatus, updatedTask.getStatus());
-                        taskEventProducer.sendTaskStatusChangeEvent(
+                        taskEventProducer.sendStatusChange(
                                 savedTask.getId(),
-                                savedTask.getStatus(),
-                                "user@example.com"
+                                savedTask.getStatus()
                         );
                     }
 

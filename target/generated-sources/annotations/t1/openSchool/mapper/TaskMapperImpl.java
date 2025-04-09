@@ -7,7 +7,7 @@ import t1.openSchool.model.Task;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-04-09T00:12:17+0300",
+    date = "2025-04-09T17:25:15+0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.11 (Amazon.com Inc.)"
 )
 @Component
@@ -25,6 +25,7 @@ public class TaskMapperImpl implements TaskMapper {
         taskDto.setTitle( task.getTitle() );
         taskDto.setDescription( task.getDescription() );
         taskDto.setUserId( task.getUserId() );
+        taskDto.setStatus( task.getStatus() );
 
         return taskDto;
     }
@@ -41,6 +42,7 @@ public class TaskMapperImpl implements TaskMapper {
         task.setTitle( taskDto.getTitle() );
         task.setDescription( taskDto.getDescription() );
         task.setUserId( taskDto.getUserId() );
+        task.setStatus( taskDto.getStatus() );
 
         return task;
     }

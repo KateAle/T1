@@ -2,6 +2,8 @@ package t1.openSchool.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,13 +23,16 @@ public class Task {
     private String description;
     private Long userId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status = "CREATED";
+    private TaskStatus status = TaskStatus.CREATED;
 
-    public Task(String title, String description, Long userId) {
-        this.title = title;
-        this.description = description;
+    public Task(TaskStatus status, Long userId, String description, String title, Long id) {
+        this.status = status;
         this.userId = userId;
+        this.description = description;
+        this.title = title;
+        this.id = id;
     }
 
     public Long getId() {
@@ -62,11 +67,11 @@ public class Task {
         this.userId = userId;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 }
