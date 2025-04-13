@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://master_postgres-1:5432/postgres
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -8,23 +8,48 @@ spring:
       maximum-pool-size: 10
       connection-timeout: 5000
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP:task-notification-group}
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: "t1.openSchool.dto"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:katusha.ale1@yandex.ru}
+    password: ${MAIL_PASSWORD:ciyumlewyehexmjh}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls.enable: ${MAIL_SMTP_STARTTLS:true}
+    test-connection: true
+
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        jdbc:
-          lob:
-            non_contextual_creation: true
 
-logging:
-  level:
-    root: INFO
-    t1.openSchool: DEBUG
-    org.springframework: INFO
-    org.hibernate.SQL: DEBUG
-  pattern:
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+task:
+  notification:
+    email: ${NOTIFICATION_EMAIL:katusha.ale1@yandex.ru}
+
+server:
+  port: ${SERVER_PORT:8081}
+
+app:
+  kafka:
+    topics:
+      task-status-changes: task-status-changes
+    consumer-groups:
+      task-notification: task-notification-group

@@ -4,14 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import t1.openSchool.dto.TaskDto;
 import t1.openSchool.aspect.annotation.HandlingResult;
 import t1.openSchool.aspect.annotation.LogException;
 import t1.openSchool.aspect.annotation.LogExecution;
 import t1.openSchool.aspect.annotation.LogExecutionTime;
 import t1.openSchool.aspect.annotation.LogTracking;
+import t1.openSchool.dto.TaskDto;
+import t1.openSchool.kafka.producer.TaskEventProducer;
 import t1.openSchool.mapper.TaskMapper;
 import t1.openSchool.model.Task;
+import t1.openSchool.model.TaskStatus;
 import t1.openSchool.repository.TaskRepository;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
+    private final TaskEventProducer taskEventProducer;
 
     @LogExecution
     @LogExecutionTime
@@ -50,12 +53,21 @@ public class TaskService {
     @LogExecutionTime
     @Transactional
     public TaskDto updateTask(Long id, TaskDto taskDto) {
-        log.debug("Updating task id {}: {}", id, taskDto);
         return taskRepository.findById(id)
                 .map(existingTask -> {
+                    TaskStatus oldStatus = existingTask.getStatus();
                     Task updatedTask = taskMapper.taskDtoToTask(taskDto);
                     updatedTask.setId(existingTask.getId());
-                    return taskMapper.taskToTaskDto(taskRepository.save(updatedTask));
+                    Task savedTask = taskRepository.save(updatedTask);
+
+                    if (!updatedTask.getStatus().equals(oldStatus)) {
+                        taskEventProducer.sendStatusChange(
+                                savedTask.getId(),
+                                savedTask.getStatus()
+                        );
+                    }
+
+                    return taskMapper.taskToTaskDto(savedTask);
                 })
                 .orElse(null);
     }
