@@ -7,7 +7,7 @@ import t1.openSchool.model.Task;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-04-09T20:33:32+0300",
+    date = "2025-04-13T19:43:54+0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.11 (Amazon.com Inc.)"
 )
 @Component

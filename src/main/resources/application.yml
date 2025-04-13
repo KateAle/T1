@@ -22,13 +22,13 @@ spring:
   mail:
     host: ${MAIL_HOST:localhost}
     port: ${MAIL_PORT:1025}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    username: ${MAIL_USERNAME:katusha.ale1@yandex.ru}
+    password: ${MAIL_PASSWORD:ciyumlewyehexmjh}
     properties:
       mail:
         smtp:
-          auth: ${MAIL_SMTP_AUTH:false}
-          starttls.enable: ${MAIL_SMTP_STARTTLS:false}
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls.enable: ${MAIL_SMTP_STARTTLS:true}
     test-connection: true
 
   jpa:
@@ -42,7 +42,14 @@ spring:
 
 task:
   notification:
-    email: ${NOTIFICATION_EMAIL:}
+    email: ${NOTIFICATION_EMAIL:katusha.ale1@yandex.ru}
 
 server:
   port: ${SERVER_PORT:8081}
+
+app:
+  kafka:
+    topics:
+      task-status-changes: task-status-changes
+    consumer-groups:
+      task-notification: task-notification-group

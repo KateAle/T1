@@ -14,7 +14,8 @@ import t1.openSchool.service.NotificationService;
 public class TaskEventConsumer {
     private final NotificationService notificationService;
 
-    @KafkaListener(topics = "task-status-changes", groupId = "task-notification-group")
+    @KafkaListener(topics = "${app.kafka.topics.task-status-changes}",
+            groupId = "${app.kafka.consumer-groups.task-notification}")
     public void handleStatusChange(TaskStatusChangeEvent event,
                                    Acknowledgment acknowledgment) {
         try {
