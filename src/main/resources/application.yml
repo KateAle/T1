@@ -20,11 +20,22 @@ spring:
           lob:
             non_contextual_creation: true
 
-logging:
-  level:
-    root: INFO
-    t1.openSchool: DEBUG
-    org.springframework: INFO
-    org.hibernate.SQL: DEBUG
-  pattern:
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+#logging:
+# level:
+#    root: INFO
+#    t1.openSchool: DEBUG
+#    org.springframework: INFO
+#    org.hibernate.SQL: DEBUG
+#  pattern:
+#    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+
+api:
+  logging:
+    enabled: true
+    level: DEBUG
+    log-execution-enabled: true
+    log-exception-enabled: true
+    log-execution-time-enabled: true
+    log-tracking-enabled: true
+    handling-result-enabled: true
