@@ -53,3 +53,16 @@ app:
       task-status-changes: task-status-changes
     consumer-groups:
       task-notification: task-notification-group
+#logging:
+# level:
+#    root: INFO
+#    t1.openSchool: DEBUG
+#    org.springframework: INFO
+#    org.hibernate.SQL: DEBUG
+#  pattern:
+#    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+
+api:
+  logging:
+    level: DEBUG

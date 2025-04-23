@@ -4,13 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import t1.openSchool.aspect.annotation.HandlingResult;
-import t1.openSchool.aspect.annotation.LogException;
-import t1.openSchool.aspect.annotation.LogExecution;
-import t1.openSchool.aspect.annotation.LogExecutionTime;
-import t1.openSchool.aspect.annotation.LogTracking;
 import t1.openSchool.dto.TaskDto;
+import t1.openSchool.exception.TaskNotFoundException;
+import t1.openSchool.exception.ValidationException;
 import t1.openSchool.kafka.producer.TaskEventProducer;
+import logging.aspect.annotation.HandlingResult;
+import logging.aspect.annotation.LogException;
+import logging.aspect.annotation.LogExecution;
+import logging.aspect.annotation.LogExecutionTime;
+import logging.aspect.annotation.LogTracking;
 import t1.openSchool.mapper.TaskMapper;
 import t1.openSchool.model.Task;
 import t1.openSchool.model.TaskStatus;
@@ -32,6 +34,9 @@ public class TaskService {
     @LogTracking
     @Transactional
     public TaskDto createTask(TaskDto taskDto) {
+        if (taskDto.getTitle() == null || taskDto.getTitle().trim().isEmpty()) {
+            throw new ValidationException("title", "Title is required");
+        }
         log.debug("Creating task: {}", taskDto);
         Task task = taskMapper.taskDtoToTask(taskDto);
         Task savedTask = taskRepository.save(task);
@@ -42,11 +47,10 @@ public class TaskService {
     @LogException
     @Transactional(readOnly = true)
     public TaskDto getTask(Long id) {
-        log.debug("Getting task by id: {}", id);
         return taskRepository.findById(id)
                 .map(taskMapper::taskToTaskDto)
-                .orElse(null);
-    }
+                .orElseThrow(() -> new TaskNotFoundException(id));
+    };
 
     @LogExecution
     @LogException
@@ -69,7 +73,7 @@ public class TaskService {
 
                     return taskMapper.taskToTaskDto(savedTask);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     @LogExecution
